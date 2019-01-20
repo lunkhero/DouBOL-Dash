@@ -14,23 +14,43 @@ Currently DouBOL Dash can read, render, and save everything except for the last 
 There is also a BTI viewer for the BTI format, BMD viewer for the model format, the ability to insert your own BMD into the stage while replacing the current course model, and a BCO viewer, which is for collision. Documentation for collision types would be greatly appreciated. Currently, here are the known collision flags:
 
 ```
-0x0000 Sand
+0x000x Sand
 0x0100 Road
+0x0101 Bridge / Wood
 0x0102 Cage Road
 0x0103 Dirt Road
-0x0101 Bridge / Wood
 0x0104 Carpet
+0x0105 Metal Cage
+0x020x Bottom part of wall / dead zone border
 0x0300 Grass
 0x0400 Slippery Ice
+0x050x Wario Colosseum cage / Baby Park dead zones / Mushroom City car ports
+0x0600 Mario #6 (grassy wall), 
+0x070x Wario Colosseum/Bowser's Castle Zipper (zipper on a ramp)
 0x0800 Speed Boost
-0x0C00 Sand (Offroad)
+0x0900 Cannon Boost
+0x0A0x Rainbow Road/Wario Colosseum dead zones - when falling into air
+0x0C00 Yellow Dry Dry Desert sand
+0x0D00 Mushroom Brdige warp pipe / Peach Beach warp pipe
+0x0E0x Dead Zone Sand
+0x0F0x Dead Zone Water/Lava
 0x0F01 Lava (might just be like water?)
 0x1000 Quicksand Sinkhole
-0x1200 Wall
-0x1300 Sand out of bounds
+0x110x Peach Beach sand
+0x120x Wall
+0x1300 Orange out of bounds sand
+0x3708 Bowser's Castle zippers
+0x470x Area zipper
+
+A 120x is always stacked on a 020x to form a wall
+the numbers are for respawns?
 ```
 
 # Credits
+Thanks to Shibbo for originally making this 2 years ago.
+Thanks to tarsa for actually wanting to make custom courses for Double Dash and giving me a reason to update this.
+Also thanks to tarsa for providing an updated collision flag list.
+
 Thanks to StapleButter for the main BMD rendering code, and miluaces for minor changes. Icons for the project were made by MelonSpeedruns.
 
 # License and Distribution
