@@ -15,29 +15,39 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
-
+/*Epic theory time. Ok so that big number he uses is kinda arbitrary for this. The point is yRot(Actually zRot?) should be divided by xRot.
+ The resulting number is then arctanned to get the degree and a pretty accurate conversion happens from radians to degree
+ It also subtracts 90 for whatever reason and this may be an accurate reflection of what the game does or it may be some random BS.
+ But it seems to work fine either way.
+ If xRot is between 0 and y(z?)Rot the possible range ends up being 45 to 90 -90 and approaches zero as the fraction approaches infinity
+ Using xRot greater than y(z?)Rot should allow a range 0 to 45 -90
+ Using negatives in x or y changes the quadrant
+ So does the -90 thing matter?*/
 namespace DouBOLDash
 {
     class MiscHacks
     {
         // the algorithm for calculating the rotations
-        // Z rotation is always a constant
+        // Z rotation is always a constant... or is it Y rotation?
         public static double returnRotations(int xrot, int yrot)
         {
             double angle1;
             double radToDeg = 57.2957795;
-            angle1 = radToDeg * Math.Atan2((double)yrot, (double)xrot);
+            angle1 = radToDeg * Math.Atan2((double)yrot, (double)xrot); //The arctan of yRot / xRot
             angle1 = angle1 - 90;
 
             return Math.Round(angle1);
         }
-
-        public static void inverseRotations(int angle, out double x, out double y)
+        //Finds xRot and yRot of current angle
+        //So I think the idea here is right but maybe implemented wrong?
+        //Also need to add 90 (I would think so anyway)
+        //If it works right or gets fixed I can set xRot and yRot = to the answers typecasted to int
+        public static void inverseRotations(int angle, out double x, out double y) //I think this was an attempt to calculate new rotations if user changes rotation
         {
-            const int length = 655360000;
+            const int length = 655360000;//I think this is a multiplier to get the values to the correct integers
             const double radToDeg = 57.2957795;
 
-            x = length * Math.Cos((double)angle / radToDeg);
+            x = length * Math.Cos((double)angle / radToDeg);//tan is sin / cos and in this case tan = yRot/xRot
             y = length * Math.Sin((double)angle / radToDeg);
         }
 
