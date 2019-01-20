@@ -450,7 +450,7 @@ namespace DouBOLDash
                 writer.Write(checkObj.yPosEnd);
                 writer.Write(checkObj.zPosEnd);
 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++) //Padding I guess?
                     writer.Write(shit);
             }
         }
@@ -710,9 +710,13 @@ namespace DouBOLDash
                 writer.Write(lvlobj.yScale);
                 writer.Write(lvlobj.zScale);
 
+                /*writer.Write(655360000);
                 writer.Write(655360000);
-                writer.Write(655360000);
-                writer.Write(655360000);
+                writer.Write(655360000);*/
+
+                writer.Write(lvlobj.xRot);
+                writer.Write(lvlobj.yRot);
+                writer.Write(lvlobj.zRot);
 
                 writer.Write(lvlobj.objID);
                 writer.Write(lvlobj.routeID);
@@ -776,7 +780,7 @@ namespace DouBOLDash
             this.playerID = 0;
         }
 
-        public void Parse(EndianBinaryReader reader)
+        public void Parse(EndianBinaryReader reader) //Reads starting point info from bol file
         {
             kpobj.xPos = reader.ReadSingle();
             kpobj.yPos = reader.ReadSingle();
@@ -795,6 +799,7 @@ namespace DouBOLDash
             kpobj.zRot = reader.ReadInt32();
 
             kpobj.rotation = MiscHacks.returnRotations(kpobj.xRot, kpobj.yRot);
+            //kpobj.rotation = 0;
 
             kpobj.polePos = reader.ReadByte();
             kpobj.playerID = reader.ReadByte();
@@ -835,7 +840,7 @@ namespace DouBOLDash
             }
         }
 
-        public void Write(EndianBinaryWriter writer, List<KartPointObject> kartObj)
+        public void Write(EndianBinaryWriter writer, List<KartPointObject> kartObj) // Saves any changes made to starting point
         {
             byte pad = 0;
             foreach(KartPointObject kpobj in kartObj)
@@ -847,10 +852,10 @@ namespace DouBOLDash
                 writer.Write(kpobj.xScale);
                 writer.Write(kpobj.yScale);
                 writer.Write(kpobj.zScale);
-
-                writer.Write(655360000);
-                writer.Write(655360000);
-                writer.Write(655360000);
+                
+                writer.Write(kpobj.xRot); // yRot/xRot is the tan of the angle of rotation
+                writer.Write(kpobj.yRot);
+                writer.Write(kpobj.zRot); //Experiment with this. Can it also cause change in rotation?
 
                 writer.Write(kpobj.polePos);
                 writer.Write(kpobj.playerID);
@@ -938,9 +943,9 @@ namespace DouBOLDash
                 writer.Write(aObj.yScale);
                 writer.Write(aObj.zScale);
 
-                writer.Write(655360000);
-                writer.Write(655360000);
-                writer.Write(655360000);
+                writer.Write(aObj.xRot);
+                writer.Write(aObj.yRot);
+                writer.Write(aObj.zRot);
 
                 writer.Write(aObj.unk1);
                 writer.Write(aObj.unk2);
@@ -1057,9 +1062,9 @@ namespace DouBOLDash
                 writer.Write(camObj.yView1);
                 writer.Write(camObj.zView1);
 
-                writer.Write(655360000);
-                writer.Write(655360000);
-                writer.Write(655360000);
+                writer.Write(camObj.xRot);
+                writer.Write(camObj.yRot);
+                writer.Write(camObj.zRot);
 
                 writer.Write(camObj.xView2);
                 writer.Write(camObj.yView2);
@@ -1142,7 +1147,6 @@ namespace DouBOLDash
                 resLis.Add(resObj);
             }
         }
-
         public void Write(EndianBinaryWriter writer, List<RespawnObject> respawnList)
         {
             foreach (RespawnObject resObj in respawnList)
@@ -1151,14 +1155,15 @@ namespace DouBOLDash
                 writer.Write(resObj.yPos);
                 writer.Write(resObj.zPos);
 
-                double derp;
-                double derp2;
+                //Not sure what these are for tbh but they were here
+                //double derp;
+                //double derp2;
 
-                MiscHacks.inverseRotations((int)resObj.rotation, out derp, out derp2);
+                //MiscHacks.inverseRotations((int)resObj.rotation, out derp, out derp2);
 
-                writer.Write(655360000);
-                writer.Write(655360000);
-                writer.Write(655360000);
+                writer.Write(resObj.xRot);
+                writer.Write(resObj.yRot);
+                writer.Write(resObj.zRot);
 
                 writer.Write(resObj.respawnID);
                 writer.Write(resObj.unk1);
@@ -1367,12 +1372,30 @@ namespace DouBOLDash
             get { return zScale; }
             set { zScale = value; }
         }
-        [DisplayName("Rotation"), Category("Position"), Description("The rotation of the object.")]
+        [DisplayName("Rotation"), Category("Position"), Description("The rotation of the object. Changes to this won't save. Use xRotation and yRotation instead")]
         public double Rotation
         {
             get { return rotation; }
             set { rotation = value; }
         }
+        [DisplayName("XRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public double XRotation
+        {
+            get { return xRot; }
+            set { rotation = value; }
+        }
+        [DisplayName("YRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public double YRotation
+        {
+            get { return yRot; }
+            set { rotation = value; }
+        }
+        /*[DisplayName("ZRotation"), Category("Position"), Description("The rotation of the object.")]
+        public double ZRotation
+        {
+            get { return zRot; }
+            set { rotation = value; }
+        }*/
         [DisplayName("Object ID"), Category("Settings"), Description("The ID of the object, to determine what it is.")]
         public ushort ObjectID
         {
@@ -1696,12 +1719,30 @@ namespace DouBOLDash
             get { return zScale; }
             set { zScale = value; }
         }
-        [DisplayName("Rotation"), Category("Position"), Description("The rotation of the starting point.")]
+        [DisplayName("Rotation"), Category("Position"), Description("The rotation of the starting point. Changes to this won't save. Use xRotation and yRotation instead")]
         public double Rotation
         {
             get { return rotation; }
             set { rotation = value; }
         }
+        [DisplayName("xRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public int XRot
+        {
+            get { return xRot; }
+            set { xRot = value; }
+        }
+        [DisplayName("yRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public int YRot
+        {
+            get { return yRot; }
+            set { yRot = value; }
+        }
+        /*[DisplayName("zRotation"), Category("Position"), Description("Don't edit this unless you know something I don't")]
+        public int ZRot
+        {
+            get { return zRot; }
+            set { zRot = value; }
+        }*/
         [DisplayName("Player ID"), Category("Settings"), Description("0xFF if this is a single player map. 0x00 to 0x03 for multiplayer maps.")]
         public byte PlayerID
         {
@@ -1765,12 +1806,30 @@ namespace DouBOLDash
             get { return zScale; }
             set { zScale = value; }
         }
-        [DisplayName("Rotation"), Category("Position"), Description("The rotation of the area.")]
+        [DisplayName("Rotation"), Category("Position"), Description("Rotation of the area object. Changes to this won't save. Use xRotation and yRotation instead")]
         public double Rotation
         {
             get { return rotation; }
             set { rotation = value; }
         }
+        [DisplayName("XRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public double XRotation
+        {
+            get { return xRot; }
+            set { rotation = value; }
+        }
+        [DisplayName("YRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public double YRotation
+        {
+            get { return yRot; }
+            set { rotation = value; }
+        }
+        /*[DisplayName("ZRotation"), Category("Position"), Description("The rotation of the object.")]
+        public double ZRotation
+        {
+            get { return zRot; }
+            set { rotation = value; }
+        }*/
         [DisplayName("Unknown 1"), Category("Settings"), Description("Unknown.")]
         public ushort Unknown1
         {
@@ -1865,12 +1924,30 @@ namespace DouBOLDash
             get { return zView3; }
             set { zView3 = value; }
         }
-        [DisplayName("Rotation"), Category("Settings"), Description("The rotation of the camera.")]
+        [DisplayName("Rotation"), Category("Settings"), Description("The rotation of the camera. Changes to this won't save. Use xRotation and yRotation instead")]
         public double Rotation
         {
             get { return rotation; }
             set { rotation = value; }
         }
+        [DisplayName("XRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public double XRotation
+        {
+            get { return xRot; }
+            set { rotation = value; }
+        }
+        [DisplayName("YRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public double YRotation
+        {
+            get { return yRot; }
+            set { rotation = value; }
+        }
+        /*[DisplayName("ZRotation"), Category("Position"), Description("The rotation of the object.")]
+        public double ZRotation
+        {
+            get { return zRot; }
+            set { rotation = value; }
+        }*/
         [DisplayName("Unknown 1"), Category("Settings"), Description("Unknown.")]
         public byte Unknown1
         {
@@ -1972,13 +2049,31 @@ namespace DouBOLDash
             get { return zPos; }
             set { zPos = value; }
         }
-        [DisplayName("Rotation"), Category("Position"), Description("The rotation of the object.")]
+        [DisplayName("Rotation"), Category("Position"), Description("The rotation of the object. Changes to this won't save. Use xRotation and yRotation instead")]
         public double Rotation
         {
             get { return rotation; }
             set { rotation = value; }
         }
-        [DisplayName("Unknown 1"), Category("Settings"), Description("Unknown.")]
+        [DisplayName("XRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public double XRotation
+        {
+            get { return xRot; }
+            set { rotation = value; }
+        }
+        [DisplayName("YRotation"), Category("Position"), Description("arctan of yRotation / xRotation -90 gives the true rotation")]
+        public double YRotation
+        {
+            get { return yRot; }
+            set { rotation = value; }
+        }
+        /*[DisplayName("ZRotation"), Category("Position"), Description("The rotation of the object.")]
+        public double ZRotation
+        {
+            get { return zRot; }
+            set { rotation = value; }
+        }*/
+            [DisplayName("Unknown 1"), Category("Settings"), Description("Unknown.")]
         public ushort Unknown1
         {
             get { return unk1; }
